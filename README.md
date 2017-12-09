@@ -5,6 +5,8 @@ https://dotstamp.com/
 
 ## setup
 
+docker build --tag="dotstamp_graphql:latest"
+
 ### install
 dep ensure
 

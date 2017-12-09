@@ -2,3 +2,4 @@
 vendor
 config/prod.yaml
 main
+dotstamp_graphql

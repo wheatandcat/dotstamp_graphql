@@ -14,7 +14,7 @@ services:
     volumes_from:
       - db-data
   app:
-    image: golang:1.9.0
+    build: .
     volumes:
       - .:/go/src/app
     ports:
