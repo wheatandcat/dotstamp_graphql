@@ -10,6 +10,9 @@ docker build --tag="dotstamp_graphql:latest"
 ### install
 dep ensure
 
+### docker build
+docker build --tag="dotstamp_graphql:latest" .
+
 ### start
 docker-compose up -d
 
