@@ -1,0 +1,25 @@
+version: '2'
+services:
+  db-data:
+    container_name: db-data
+    image: busybox
+    volumes:
+      - /data/db
+  db:
+    image: groonga/mroonga
+    ports:
+        - "3306:3306"
+    expose:
+      - 3306
+    volumes_from:
+      - db-data
+  app:
+    image: golang:1.9.0
+    volumes:
+      - .:/go/src/app
+    ports:
+      - "8080:8080"
+    working_dir: /go/src/app
+    command: go run main.go
+    depends_on:
+      - db

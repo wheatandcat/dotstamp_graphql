@@ -3,15 +3,17 @@
 ## About
 https://dotstamp.com/
 
-## Info
+## setup
 
+### install
+dep ensure
 
-## devlop start
-```
-go run main.go
-```
+### start
+docker-compose up -d
 
-## prod start
-```
-ENV_CONF=prod go run main.go
-```
+### DB
+mysql -h 0.0.0.0 -P 3306 -u root -e 'CREATE DATABASE stamp_test;'
+goose -env test up
+
+### stop
+docker-compose stop

@@ -1,4 +1,4 @@
 user: root
 password: ""
-host: ""
+host: tcp(db:3306)
 dbname: stamp_test
