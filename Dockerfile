@@ -10,4 +10,4 @@ RUN go get -u github.com/golang/dep/cmd/dep && \
 
 EXPOSE 8080
 
-ENTRYPOINT ["main"]
+ENTRYPOINT ["/go/src/app/main"]
