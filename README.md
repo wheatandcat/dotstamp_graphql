@@ -18,6 +18,8 @@ docker-compose up -d
 mysql -h 0.0.0.0 -P 3306 -u root -e 'CREATE DATABASE stamp_test;'
 goose -env test up
 
+mysql -h 0.0.0.0 -P 3306 -u root
+
 ### test data
 sh scripts/test_data.sh
 
