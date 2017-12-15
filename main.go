@@ -13,7 +13,10 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	"github.com/jmoiron/sqlx"
-	"github.com/wheatandcat/dotstamp_admin_server/types"
+	"github.com/wheatandcat/dotstamp_graphql/types"
+	"github.com/wheatandcat/dotstamp_graphql/utils/contributions"
+	"github.com/wheatandcat/dotstamp_graphql/utils/follows"
+	"github.com/wheatandcat/dotstamp_graphql/utils/tags"
 )
 
 // DB database connection
@@ -131,10 +134,19 @@ var queryType = graphql.NewObject(
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					first, _ := p.Args["first"].(int)
-					u := []types.UserContribution{}
-					err := DB.Select(&u, "SELECT * FROM user_contributions ORDER BY id ASC LIMIT ?", first)
+					u, err := contributions.GetContributions(DB, first)
 					if err != nil {
-						return nil, nil
+						return nil, err
+					}
+
+					u, err = tags.MapTgas(DB, u)
+					if err != nil {
+						return nil, err
+					}
+
+					u, err = follows.MapTgas(DB, u)
+					if err != nil {
+						return nil, err
 					}
 
 					return u, nil

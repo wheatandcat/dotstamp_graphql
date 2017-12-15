@@ -47,8 +47,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `user_contribution_tags` WRITE;
 /*!40000 ALTER TABLE `user_contribution_tags` DISABLE KEYS */;
-INSERT INTO `user_contribution_tags` VALUES (1,1,'foo,bar,foobar','2017-07-23 15:12:52','2017-07-23 15:12:52',NULL);
-INSERT INTO `user_contribution_tags` VALUES (2,1,'foo,bar,foobar','2017-07-23 15:12:52','2017-07-23 15:12:52',NULL);
+INSERT INTO `user_contribution_tags` VALUES (1,1,'foo','2017-07-23 15:12:52','2017-07-23 15:12:52',NULL);
+INSERT INTO `user_contribution_tags` VALUES (2,1,'bar','2017-07-23 15:12:52','2017-07-23 15:12:52',NULL);
 /*!40000 ALTER TABLE `user_contribution_tags` ENABLE KEYS */;
 UNLOCK TABLES;
 

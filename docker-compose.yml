@@ -19,3 +19,13 @@ services:
       - "8080:8080"
     depends_on:
       - db
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=
+    ports:
+       - 8081:80
+    volumes:
+       - /sessions
