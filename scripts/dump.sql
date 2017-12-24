@@ -18,7 +18,7 @@
 -- Dumping data for table `user_contributions`
 --
 LOCK TABLES `user_masters` WRITE;
-INSERT INTO `user_masters` VALUES (1,'foo','foo@com','foo',1,'2017-07-23 15:12:52','2017-07-23 15:12:52',NULL);
+INSERT INTO `user_masters` VALUES (1,'foo','foo@com','2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae',1,'2017-07-23 15:12:52','2017-07-23 15:12:52',NULL);
 INSERT INTO `user_masters` VALUES (2,'bar','bar@com','bar',0,'2017-07-23 15:12:52','2017-07-23 15:12:52',NULL);
 UNLOCK TABLES;
 

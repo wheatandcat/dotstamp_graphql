@@ -16,18 +16,23 @@ import (
 	"github.com/wheatandcat/dotstamp_graphql/types"
 	"github.com/wheatandcat/dotstamp_graphql/utils/contributions"
 	"github.com/wheatandcat/dotstamp_graphql/utils/follows"
+	"github.com/wheatandcat/dotstamp_graphql/utils/login"
 	"github.com/wheatandcat/dotstamp_graphql/utils/tags"
 )
 
 // DB database connection
 var DB *sqlx.DB
 
-// DbInfo DB情報
-type DbInfo struct {
+// CONF config info
+var CONF ConfiInfo
+
+// ConfiInfo config info type
+type ConfiInfo struct {
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 	Host     string `yaml:"host"`
 	Dbname   string `yaml:"dbname"`
+	LoginKey string `yaml:"loginkey"`
 }
 
 func connectDB() {
@@ -44,14 +49,13 @@ func connectDB() {
 		panic(err)
 	}
 
-	var d DbInfo
-	err = yaml.Unmarshal(buf, &d)
+	err = yaml.Unmarshal(buf, &CONF)
 	if err != nil {
 		panic(err)
 	}
 
-	db, err := sqlx.Connect("mysql", d.User+":"+d.Password+"@"+d.Host+"/"+d.Dbname)
-	log.Println(d.User + ":" + d.Password + "@" + d.Host + "/" + d.Dbname)
+	db, err := sqlx.Connect("mysql", CONF.User+":"+CONF.Password+"@"+CONF.Host+"/"+CONF.Dbname)
+	log.Println(CONF.User + ":" + CONF.Password + "@" + CONF.Host + "/" + CONF.Dbname)
 	if err != nil {
 		panic(err)
 	}
@@ -190,6 +194,31 @@ var queryType = graphql.NewObject(
 					}
 
 					return r, nil
+				},
+			},
+			"login": &graphql.Field{
+				Type:        types.UserType,
+				Description: "login check",
+				Args: graphql.FieldConfigArgument{
+					"email": &graphql.ArgumentConfig{
+						Type:        graphql.String,
+						Description: "email",
+					},
+					"password": &graphql.ArgumentConfig{
+						Type:        graphql.String,
+						Description: "password",
+					},
+				},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					email, _ := p.Args["email"].(string)
+					password, _ := p.Args["password"].(string)
+
+					u, err := login.GetLogin(DB, email, password, CONF.LoginKey)
+					if err != nil {
+						return nil, err
+					}
+
+					return u, nil
 				},
 			},
 		},
