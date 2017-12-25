@@ -18,6 +18,7 @@ import (
 	"github.com/wheatandcat/dotstamp_graphql/utils/follows"
 	"github.com/wheatandcat/dotstamp_graphql/utils/login"
 	"github.com/wheatandcat/dotstamp_graphql/utils/tags"
+	"github.com/wheatandcat/dotstamp_graphql/utils/users"
 )
 
 // DB database connection
@@ -267,6 +268,30 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				return u, nil
 			},
 		},
+		"createUser": &graphql.Field{
+			Type:        types.UserType,
+			Description: "create user",
+			Args: graphql.FieldConfigArgument{
+				"email": &graphql.ArgumentConfig{
+					Type:        graphql.String,
+					Description: "email",
+				},
+				"password": &graphql.ArgumentConfig{
+					Type:        graphql.String,
+					Description: "password",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				email, _ := p.Args["email"].(string)
+				password, _ := p.Args["password"].(string)
+				u, err := users.Create(DB, email, password, CONF.LoginKey)
+				if err != nil {
+					return nil, err
+				}
+
+				return u, nil
+			},
+		},
 	},
 })
 
@@ -287,4 +312,5 @@ func main() {
 
 	http.Handle("/graphql", h)
 	http.ListenAndServe(":8080", nil)
+
 }

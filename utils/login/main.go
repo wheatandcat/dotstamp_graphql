@@ -5,13 +5,9 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/wheatandcat/dotstamp_graphql/types"
+	"github.com/wheatandcat/dotstamp_graphql/utils/encryption"
 	"github.com/wheatandcat/dotstamp_graphql/utils/users"
-	"github.com/wheatandcat/dotstamp_server/utils"
 )
-
-func getPassword(p string, k string) string {
-	return utils.SrringToEncryption(p + k)
-}
 
 // GetLogin get login user
 func GetLogin(DB *sqlx.DB, email string, p string, k string) (types.UserMaster, error) {
@@ -21,7 +17,7 @@ func GetLogin(DB *sqlx.DB, email string, p string, k string) (types.UserMaster, 
 		return u, err
 	}
 
-	if getPassword(p, k) != u.Password {
+	if encryption.GetPassword(p, k) != u.Password {
 		return u, errors.New("password diffrent")
 	}
 
