@@ -18,7 +18,7 @@ type LogQuestion struct {
 // LogQuestionType 質問ログタイプ
 var LogQuestionType = graphql.NewObject(
 	graphql.ObjectConfig{
-		Name: "Contribution",
+		Name: "LogQuestion",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
 				Type:        graphql.Int,

@@ -19,7 +19,7 @@ type LogProblemContributionReport struct {
 // LogProblemContributionReportType 投稿通報ログタイプ
 var LogProblemContributionReportType = graphql.NewObject(
 	graphql.ObjectConfig{
-		Name: "Contribution",
+		Name: "LogProblemContributionReport",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
 				Type:        graphql.Int,

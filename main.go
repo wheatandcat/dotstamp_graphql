@@ -64,169 +64,168 @@ func connectDB() {
 	DB = db
 }
 
-var queryType = graphql.NewObject(
-	graphql.ObjectConfig{
-		Name: "Query",
-		Fields: graphql.Fields{
-			"user": &graphql.Field{
-				Type:        types.UserType,
-				Description: "find user",
-				Args: graphql.FieldConfigArgument{
-					"id": &graphql.ArgumentConfig{
-						Type:        graphql.Int,
-						Description: "user id",
-					},
-				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					id, _ := p.Args["id"].(int)
-					u := types.UserMaster{}
-					err := DB.Get(&u, "SELECT * FROM user_masters WHERE id=?", id)
-					if err != nil {
-						return nil, nil
-					}
-
-					return u, nil
+var query = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Query",
+	Fields: graphql.Fields{
+		"user": &graphql.Field{
+			Type:        types.UserType,
+			Description: "find user",
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{
+					Type:        graphql.Int,
+					Description: "user id",
 				},
 			},
-			"userList": &graphql.Field{
-				Type:        graphql.NewList(types.UserType),
-				Description: "user list",
-				Args: graphql.FieldConfigArgument{
-					"first": &graphql.ArgumentConfig{
-						Type:        graphql.Int,
-						Description: "number of item displayed",
-					},
-				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					first, _ := p.Args["first"].(int)
-					u := []types.UserMaster{}
-					err := DB.Select(&u, "SELECT * FROM user_masters ORDER BY id ASC LIMIT ?", first)
-					if err != nil {
-						return nil, nil
-					}
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				id, _ := p.Args["id"].(int)
+				u := types.UserMaster{}
+				err := DB.Get(&u, "SELECT * FROM user_masters WHERE id=?", id)
+				if err != nil {
+					return nil, nil
+				}
 
-					return u, nil
-				},
-			},
-			"contribution": &graphql.Field{
-				Type:        types.ContributionType,
-				Description: "find contribution",
-				Args: graphql.FieldConfigArgument{
-					"id": &graphql.ArgumentConfig{
-						Type:        graphql.Int,
-						Description: "contribution id",
-					},
-				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					idQuery, _ := p.Args["id"].(int)
-					u := types.UserContribution{}
-					err := DB.Get(&u, "SELECT * FROM user_contributions WHERE id=?", idQuery)
-					if err != nil {
-						return nil, nil
-					}
-
-					return u, nil
-				},
-			},
-			"contributionList": &graphql.Field{
-				Type:        graphql.NewList(types.ContributionType),
-				Description: "contribution list",
-				Args: graphql.FieldConfigArgument{
-					"first": &graphql.ArgumentConfig{
-						Type:        graphql.Int,
-						Description: "number of item displayed",
-					},
-				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					first, _ := p.Args["first"].(int)
-					u, err := contributions.GetContributions(DB, first)
-					if err != nil {
-						return nil, err
-					}
-
-					u, err = tags.MapTgas(DB, u)
-					if err != nil {
-						return nil, err
-					}
-
-					u, err = follows.MapTgas(DB, u)
-					if err != nil {
-						return nil, err
-					}
-
-					return u, nil
-				},
-			},
-			"problemList": &graphql.Field{
-				Type:        graphql.NewList(types.LogProblemContributionReportType),
-				Description: "proble list",
-				Args: graphql.FieldConfigArgument{
-					"first": &graphql.ArgumentConfig{
-						Type:        graphql.Int,
-						Description: "number of item displayed",
-					},
-				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					first, _ := p.Args["first"].(int)
-					r := []types.LogProblemContributionReport{}
-					err := DB.Select(&r, "SELECT l.id, l.user_contribution_id, c.title, l.type, l.created_at, l.updated_at, l.deleted_at FROM log_problem_contribution_reports as l INNER JOIN user_contributions  as c ON  l.user_contribution_id = c.id ORDER BY l.id DESC LIMIT ?", first)
-					if err != nil {
-						return nil, nil
-					}
-
-					return r, nil
-				},
-			},
-			"questionList": &graphql.Field{
-				Type:        graphql.NewList(types.LogQuestionType),
-				Description: "question list",
-				Args: graphql.FieldConfigArgument{
-					"first": &graphql.ArgumentConfig{
-						Type:        graphql.Int,
-						Description: "number of item displayed",
-					},
-				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					first, _ := p.Args["first"].(int)
-					r := []types.LogQuestion{}
-					err := DB.Select(&r, "SELECT * FROM log_questions ORDER BY id ASC LIMIT ?", first)
-					if err != nil {
-						return nil, nil
-					}
-
-					return r, nil
-				},
-			},
-			"login": &graphql.Field{
-				Type:        types.UserType,
-				Description: "login check",
-				Args: graphql.FieldConfigArgument{
-					"email": &graphql.ArgumentConfig{
-						Type:        graphql.String,
-						Description: "email",
-					},
-					"password": &graphql.ArgumentConfig{
-						Type:        graphql.String,
-						Description: "password",
-					},
-				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					email, _ := p.Args["email"].(string)
-					password, _ := p.Args["password"].(string)
-
-					u, err := login.GetLogin(DB, email, password, CONF.LoginKey)
-					if err != nil {
-						return nil, err
-					}
-
-					return u, nil
-				},
+				return u, nil
 			},
 		},
-	})
+		"userList": &graphql.Field{
+			Type:        graphql.NewList(types.UserType),
+			Description: "user list",
+			Args: graphql.FieldConfigArgument{
+				"first": &graphql.ArgumentConfig{
+					Type:        graphql.Int,
+					Description: "number of item displayed",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				first, _ := p.Args["first"].(int)
+				u := []types.UserMaster{}
+				err := DB.Select(&u, "SELECT * FROM user_masters ORDER BY id ASC LIMIT ?", first)
+				if err != nil {
+					return nil, nil
+				}
 
-var rootMutation = graphql.NewObject(graphql.ObjectConfig{
-	Name: "RootMutation",
+				return u, nil
+			},
+		},
+		"contribution": &graphql.Field{
+			Type:        types.ContributionType,
+			Description: "find contribution",
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{
+					Type:        graphql.Int,
+					Description: "contribution id",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				idQuery, _ := p.Args["id"].(int)
+				u := types.UserContribution{}
+				err := DB.Get(&u, "SELECT * FROM user_contributions WHERE id=?", idQuery)
+				if err != nil {
+					return nil, nil
+				}
+
+				return u, nil
+			},
+		},
+		"contributionList": &graphql.Field{
+			Type:        graphql.NewList(types.ContributionType),
+			Description: "contribution list",
+			Args: graphql.FieldConfigArgument{
+				"first": &graphql.ArgumentConfig{
+					Type:        graphql.Int,
+					Description: "number of item displayed",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				first, _ := p.Args["first"].(int)
+				u, err := contributions.GetContributions(DB, first)
+				if err != nil {
+					return nil, err
+				}
+
+				u, err = tags.MapTgas(DB, u)
+				if err != nil {
+					return nil, err
+				}
+
+				u, err = follows.MapTgas(DB, u)
+				if err != nil {
+					return nil, err
+				}
+
+				return u, nil
+			},
+		},
+		"problemList": &graphql.Field{
+			Type:        graphql.NewList(types.LogProblemContributionReportType),
+			Description: "proble list",
+			Args: graphql.FieldConfigArgument{
+				"first": &graphql.ArgumentConfig{
+					Type:        graphql.Int,
+					Description: "number of item displayed",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				first, _ := p.Args["first"].(int)
+				r := []types.LogProblemContributionReport{}
+				err := DB.Select(&r, "SELECT l.id, l.user_contribution_id, c.title, l.type, l.created_at, l.updated_at, l.deleted_at FROM log_problem_contribution_reports as l INNER JOIN user_contributions  as c ON  l.user_contribution_id = c.id ORDER BY l.id DESC LIMIT ?", first)
+				if err != nil {
+					return nil, nil
+				}
+
+				return r, nil
+			},
+		},
+		"questionList": &graphql.Field{
+			Type:        graphql.NewList(types.LogQuestionType),
+			Description: "question list",
+			Args: graphql.FieldConfigArgument{
+				"first": &graphql.ArgumentConfig{
+					Type:        graphql.Int,
+					Description: "number of item displayed",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				first, _ := p.Args["first"].(int)
+				r := []types.LogQuestion{}
+				err := DB.Select(&r, "SELECT * FROM log_questions ORDER BY id ASC LIMIT ?", first)
+				if err != nil {
+					return nil, nil
+				}
+
+				return r, nil
+			},
+		},
+		"login": &graphql.Field{
+			Type:        types.UserType,
+			Description: "login check",
+			Args: graphql.FieldConfigArgument{
+				"email": &graphql.ArgumentConfig{
+					Type:        graphql.String,
+					Description: "email",
+				},
+				"password": &graphql.ArgumentConfig{
+					Type:        graphql.String,
+					Description: "password",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				email, _ := p.Args["email"].(string)
+				password, _ := p.Args["password"].(string)
+
+				u, err := login.GetLogin(DB, email, password, CONF.LoginKey)
+				if err != nil {
+					return nil, err
+				}
+
+				return u, nil
+			},
+		},
+	},
+})
+
+var mutation = graphql.NewObject(graphql.ObjectConfig{
+	Name: "Mutation",
 	Fields: graphql.Fields{
 		"hideContribution": &graphql.Field{
 			Type:        types.HideType,
@@ -273,17 +272,16 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 			Description: "create user",
 			Args: graphql.FieldConfigArgument{
 				"email": &graphql.ArgumentConfig{
-					Type:        graphql.String,
-					Description: "email",
+					Type: graphql.String,
 				},
 				"password": &graphql.ArgumentConfig{
-					Type:        graphql.String,
-					Description: "password",
+					Type: graphql.String,
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				email, _ := p.Args["email"].(string)
-				password, _ := p.Args["password"].(string)
+				password := p.Args["password"].(string)
+
 				u, err := users.Create(DB, email, password, CONF.LoginKey)
 				if err != nil {
 					return nil, err
@@ -295,18 +293,20 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-var schema, _ = graphql.NewSchema(
-	graphql.SchemaConfig{
-		Query:    queryType,
-		Mutation: rootMutation,
-	},
-)
-
 func main() {
+
 	connectDB()
 
+	Schema, err := graphql.NewSchema(graphql.SchemaConfig{
+		Query:    query,
+		Mutation: mutation,
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	h := handler.New(&handler.Config{
-		Schema: &schema,
+		Schema: &Schema,
 		Pretty: true,
 	})
 
