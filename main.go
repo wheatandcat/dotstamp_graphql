@@ -196,31 +196,6 @@ var query = graphql.NewObject(graphql.ObjectConfig{
 				return r, nil
 			},
 		},
-		"login": &graphql.Field{
-			Type:        types.UserType,
-			Description: "login check",
-			Args: graphql.FieldConfigArgument{
-				"email": &graphql.ArgumentConfig{
-					Type:        graphql.String,
-					Description: "email",
-				},
-				"password": &graphql.ArgumentConfig{
-					Type:        graphql.String,
-					Description: "password",
-				},
-			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				email, _ := p.Args["email"].(string)
-				password, _ := p.Args["password"].(string)
-
-				u, err := login.GetLogin(DB, email, password, CONF.LoginKey)
-				if err != nil {
-					return nil, err
-				}
-
-				return u, nil
-			},
-		},
 	},
 })
 
@@ -283,6 +258,31 @@ var mutation = graphql.NewObject(graphql.ObjectConfig{
 				password := p.Args["password"].(string)
 
 				u, err := users.Create(DB, email, password, CONF.LoginKey)
+				if err != nil {
+					return nil, err
+				}
+
+				return u, nil
+			},
+		},
+		"login": &graphql.Field{
+			Type:        types.UserType,
+			Description: "login check",
+			Args: graphql.FieldConfigArgument{
+				"email": &graphql.ArgumentConfig{
+					Type:        graphql.String,
+					Description: "email",
+				},
+				"password": &graphql.ArgumentConfig{
+					Type:        graphql.String,
+					Description: "password",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				email, _ := p.Args["email"].(string)
+				password, _ := p.Args["password"].(string)
+
+				u, err := login.GetLogin(DB, email, password, CONF.LoginKey)
 				if err != nil {
 					return nil, err
 				}
