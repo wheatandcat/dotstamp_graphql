@@ -71,6 +71,26 @@ func connectDB() {
 var query = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Query",
 	Fields: graphql.Fields{
+		"me": &graphql.Field{
+			Type:        types.UserType,
+			Description: "find me",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				id, err := authJwt.Auth(authKey, CONF.LoginKey)
+				if err != nil {
+					u := types.UserMaster{}
+					return u, nil
+				}
+
+				u := types.UserMaster{}
+				err = DB.Get(&u, "SELECT * FROM user_masters WHERE id=?", id)
+				if err != nil {
+					u = types.UserMaster{}
+					return u, nil
+				}
+
+				return u, nil
+			},
+		},
 		"user": &graphql.Field{
 			Type:        types.UserType,
 			Description: "find user",
@@ -84,11 +104,8 @@ var query = graphql.NewObject(graphql.ObjectConfig{
 				id, _ := p.Args["id"].(int)
 				u := types.UserMaster{}
 				err := DB.Get(&u, "SELECT * FROM user_masters WHERE id=?", id)
-				if err != nil {
-					return nil, nil
-				}
 
-				return u, nil
+				return u, err
 			},
 		},
 		"userList": &graphql.Field{
@@ -104,11 +121,8 @@ var query = graphql.NewObject(graphql.ObjectConfig{
 				first, _ := p.Args["first"].(int)
 				u := []types.UserMaster{}
 				err := DB.Select(&u, "SELECT * FROM user_masters ORDER BY id ASC LIMIT ?", first)
-				if err != nil {
-					return nil, nil
-				}
 
-				return u, nil
+				return u, err
 			},
 		},
 		"contribution": &graphql.Field{
@@ -124,11 +138,8 @@ var query = graphql.NewObject(graphql.ObjectConfig{
 				idQuery, _ := p.Args["id"].(int)
 				u := types.UserContribution{}
 				err := DB.Get(&u, "SELECT * FROM user_contributions WHERE id=?", idQuery)
-				if err != nil {
-					return nil, nil
-				}
 
-				return u, nil
+				return u, err
 			},
 		},
 		"contributionList": &graphql.Field{
@@ -141,7 +152,6 @@ var query = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-
 				first, _ := p.Args["first"].(int)
 				u, err := contributions.GetContributions(DB, first)
 				if err != nil {
@@ -291,7 +301,7 @@ var mutation = graphql.NewObject(graphql.ObjectConfig{
 				if err != nil {
 					return nil, err
 				}
-				key, err := authJwt.CreateTokenString(u.ID)
+				key, err := authJwt.CreateTokenString(u.ID, CONF.LoginKey)
 				if err != nil {
 					return nil, err
 				}
