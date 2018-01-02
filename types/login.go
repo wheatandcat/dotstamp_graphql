@@ -10,18 +10,19 @@ type Login struct {
 	Password uint `json:"password"`
 }
 
+// AuthKey 認証キー
+type AuthKey struct {
+	Key string `json:"key"`
+}
+
 // LoginType ログインタイプ
 var LoginType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Login",
 		Fields: graphql.Fields{
-			"email": &graphql.Field{
+			"key": &graphql.Field{
 				Type:        graphql.String,
-				Description: "email",
-			},
-			"password": &graphql.Field{
-				Type:        graphql.String,
-				Description: "password",
+				Description: "auth key",
 			},
 		},
 	},

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 	"github.com/graphql-go/handler"
 	"github.com/jmoiron/sqlx"
 	"github.com/wheatandcat/dotstamp_graphql/types"
+	"github.com/wheatandcat/dotstamp_graphql/utils/auth"
 	"github.com/wheatandcat/dotstamp_graphql/utils/contributions"
 	"github.com/wheatandcat/dotstamp_graphql/utils/follows"
 	"github.com/wheatandcat/dotstamp_graphql/utils/login"
@@ -26,6 +28,8 @@ var DB *sqlx.DB
 
 // CONF config info
 var CONF ConfiInfo
+
+var authKey string
 
 // ConfiInfo config info type
 type ConfiInfo struct {
@@ -137,6 +141,7 @@ var query = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+
 				first, _ := p.Args["first"].(int)
 				u, err := contributions.GetContributions(DB, first)
 				if err != nil {
@@ -266,7 +271,7 @@ var mutation = graphql.NewObject(graphql.ObjectConfig{
 			},
 		},
 		"login": &graphql.Field{
-			Type:        types.UserType,
+			Type:        types.LoginType,
 			Description: "login check",
 			Args: graphql.FieldConfigArgument{
 				"email": &graphql.ArgumentConfig{
@@ -286,13 +291,51 @@ var mutation = graphql.NewObject(graphql.ObjectConfig{
 				if err != nil {
 					return nil, err
 				}
+				key, err := authJwt.CreateTokenString(u.ID)
+				if err != nil {
+					return nil, err
+				}
+				var r types.AuthKey
+				r.Key = key
 
-				return u, nil
+				return r, nil
 			},
 		},
 	},
 })
 
+func customHandler(schema *graphql.Schema) func(http.ResponseWriter, *http.Request) {
+	return func(rw http.ResponseWriter, r *http.Request) {
+		authKey = r.Header.Get("Authorization")
+
+		opts := handler.NewRequestOptions(r)
+
+		rootValue := map[string]interface{}{
+			"response": rw,
+			"request":  r,
+		}
+
+		params := graphql.Params{
+			Schema:         *schema,
+			RequestString:  opts.Query,
+			VariableValues: opts.Variables,
+			OperationName:  opts.OperationName,
+			RootObject:     rootValue,
+		}
+
+		result := graphql.Do(params)
+
+		jsonStr, err := json.Marshal(result)
+
+		if err != nil {
+			panic(err)
+		}
+
+		rw.Header().Set("Content-Type", "application/json")
+
+		rw.Write(jsonStr)
+	}
+}
 func main() {
 
 	connectDB()
@@ -305,12 +348,7 @@ func main() {
 		panic(err)
 	}
 
-	h := handler.New(&handler.Config{
-		Schema: &Schema,
-		Pretty: true,
-	})
-
-	http.Handle("/graphql", h)
+	http.HandleFunc("/graphql", customHandler(&Schema))
 	http.ListenAndServe(":8080", nil)
 
 }
