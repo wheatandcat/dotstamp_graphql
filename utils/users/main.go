@@ -5,7 +5,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/wheatandcat/dotstamp_graphql/types"
-	date "github.com/wheatandcat/dotstamp_graphql/utils/date.go"
+	date "github.com/wheatandcat/dotstamp_graphql/utils/date"
 	"github.com/wheatandcat/dotstamp_graphql/utils/encryption"
 )
 

@@ -17,6 +17,7 @@ import (
 	"github.com/wheatandcat/dotstamp_graphql/types"
 	"github.com/wheatandcat/dotstamp_graphql/utils/auth"
 	"github.com/wheatandcat/dotstamp_graphql/utils/contributions"
+	"github.com/wheatandcat/dotstamp_graphql/utils/contributionsDetail"
 	"github.com/wheatandcat/dotstamp_graphql/utils/follows"
 	"github.com/wheatandcat/dotstamp_graphql/utils/login"
 	"github.com/wheatandcat/dotstamp_graphql/utils/tags"
@@ -169,6 +170,27 @@ var query = graphql.NewObject(graphql.ObjectConfig{
 				}
 
 				return u, nil
+			},
+		},
+		"contributionDetail": &graphql.Field{
+			Type:        graphql.NewList(types.BodyType),
+			Description: "find contribution detail",
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{
+					Type:        graphql.Int,
+					Description: "contribution id",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				id, _ := p.Args["id"].(int)
+				u, err := contributionsDetail.GetByID(DB, id)
+				if err != nil {
+					return nil, err
+				}
+
+				body, err := contributionsDetail.GetBody(u.Body)
+
+				return body, err
 			},
 		},
 		"problemList": &graphql.Field{
