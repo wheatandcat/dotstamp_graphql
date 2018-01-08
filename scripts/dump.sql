@@ -37,7 +37,7 @@ UNLOCK TABLES;
 LOCK TABLES `user_contribution_details` WRITE;
 /*!40000 ALTER TABLE `user_contribution_details` DISABLE KEYS */;
 INSERT INTO `user_contribution_details` VALUES (1,1,'[{"priority":1,"body":"foo","iconType":1,"iconFace":1,"directionType":1,"talkType":1,"edit":false,"character":{"id":1,"fileName":"1.jpg","voiceType":1}}]','2017-07-23 15:12:52','2017-07-23 15:12:52',NULL);
-INSERT INTO `user_contribution_details` VALUES (2,1,'[{"priority":1,"body":"foo","iconType":1,"iconFace":1,"directionType":1,"talkType":1,"edit":false,"character":{"id":1,"fileName":"1.jpg","voiceType":1}}]','2017-07-23 15:12:52','2017-07-23 15:12:52',NULL);
+INSERT INTO `user_contribution_details` VALUES (2,2,'[{"priority":1,"body":"foo","iconType":1,"iconFace":1,"directionType":1,"talkType":1,"edit":false,"character":{"id":1,"fileName":"1.jpg","voiceType":1}}]','2017-07-23 15:12:52','2017-07-23 15:12:52',NULL);
 /*!40000 ALTER TABLE `user_contribution_details` ENABLE KEYS */;
 UNLOCK TABLES;
 

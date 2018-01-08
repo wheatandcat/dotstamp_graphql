@@ -233,6 +233,40 @@ var query = graphql.NewObject(graphql.ObjectConfig{
 				return r, nil
 			},
 		},
+		"followList": &graphql.Field{
+			Type:        graphql.NewList(types.FollowType),
+			Description: "follow list",
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{
+					Type:        graphql.Int,
+					Description: "contribution id",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				id, _ := p.Args["id"].(int)
+				r := []types.UserContributionFollow{}
+				DB.Select(&r, "SELECT * FROM user_contribution_follows WHERE user_contribution_id = ? AND deleted_at IS NULL", id)
+
+				return r, nil
+			},
+		},
+		"tagList": &graphql.Field{
+			Type:        graphql.NewList(types.TagType),
+			Description: "tag list",
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{
+					Type:        graphql.Int,
+					Description: "contribution id",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				id, _ := p.Args["id"].(int)
+				r := []types.UserContributionTag{}
+				DB.Select(&r, "SELECT * FROM user_contribution_tags WHERE user_contribution_id = ? AND deleted_at IS NULL", id)
+
+				return r, nil
+			},
+		},
 	},
 })
 

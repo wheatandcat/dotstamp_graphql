@@ -14,6 +14,7 @@ type UserContribution struct {
 	ProfileImageID string                `db:"profile_image_id" json:"profileImageId"`
 	CreatedAt      string                `db:"created_at" json:"createdAt"`
 	UpdatedAt      string                `db:"updated_at" json:"updatedAt"`
+	DeletedAt      *string               `db:"deleted_at" json:"deletedAt"`
 	Tags           []UserContributionTag `json:"tags"`
 	Follow         int                   `json:"follow"`
 }
@@ -56,7 +57,7 @@ var ContributionType = graphql.NewObject(
 				Description: "update date",
 			},
 			"tags": &graphql.Field{
-				Type:        graphql.NewList(ContributionTagType),
+				Type:        graphql.NewList(TagType),
 				Description: "tags",
 			},
 			"follow": &graphql.Field{

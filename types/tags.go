@@ -12,8 +12,8 @@ type UserContributionTag struct {
 	DeletedAt          *string `db:"deleted_at" json:"deletedAt"`
 }
 
-// ContributionTagType 投稿タグタイプ
-var ContributionTagType = graphql.NewObject(
+// TagType 投稿タグタイプ
+var TagType = graphql.NewObject(
 	graphql.ObjectConfig{
 		Name: "Tag",
 		Fields: graphql.Fields{
