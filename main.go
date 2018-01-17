@@ -267,6 +267,23 @@ var query = graphql.NewObject(graphql.ObjectConfig{
 				return r, nil
 			},
 		},
+		"movie": &graphql.Field{
+			Type:        types.MovieType,
+			Description: "movie",
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{
+					Type:        graphql.Int,
+					Description: "contribution id",
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				id, _ := p.Args["id"].(int)
+				r := types.UserContributionMovie{}
+				DB.Get(&r, "SELECT * FROM user_contribution_movies WHERE id = ? AND deleted_at IS NULL", id)
+
+				return r, nil
+			},
+		},
 	},
 })
 

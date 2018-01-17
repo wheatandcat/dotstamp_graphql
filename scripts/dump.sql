@@ -52,6 +52,8 @@ INSERT INTO `user_contribution_tags` VALUES (2,1,'bar','2017-07-23 15:12:52','20
 /*!40000 ALTER TABLE `user_contribution_tags` ENABLE KEYS */;
 UNLOCK TABLES;
 
+INSERT INTO `user_contribution_movies` VALUES (1,1,1,'LHGPkS-HjZs',1,'2017-07-23 15:12:52','2017-07-23 15:12:52',NULL);
+
 --
 -- Dumping data for table `log_user_contributions`
 --
